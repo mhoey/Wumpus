@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Wumpus</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+        }
+
+        /* Chrome, Edge, and Safari */
+        *::-webkit-scrollbar {
+            width: 16px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: #ffffff00;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background-color: #104418;
+            border-radius: 10px;
+            border: 3px solid #ffffff;
+        }
+
+        #content {
+            margin: 48px;
+            height: calc(100vh - 96px);
+            display: grid;
+            grid-template-areas:
+                "textarea"
+                "textinput"
+                "storyarea";
+            grid-template-columns: 70% 30%;
+            grid-template-rows: 1fr 40px;
+        }
+
+
+        #ta,
+        #ti,
+        #tin {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 1.2em;
+            background-color: rgb(1, 46, 1);
+            color: greenyellow;
+            border: none;
+            outline: none;
+            margin: 0px;
+        }
+
+        #ta {
+            overflow-y: scroll;
+            grid-area: textarea;
+            grid-column: 1;
+            grid-row: 1;
+            padding: 8px;
+            resize: none;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+
+        #ti {
+            padding: 8px;
+            grid-area: textinput;
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        #sa {
+            margin: 0px 8px 0px 8px;
+            padding: 32px;
+            grid-area: storyarea;
+            background-color: antiquewhite;
+            grid-column: 2;
+            grid-row: 1 / 3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cop {
+            overflow-y: scroll;
+            flex-grow: 1;
+        }
+
+        .cop p {
+            padding-right: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <div id="ta" readonly="true" contenteditable="false"></div>
+        <div id="sa">
+            <h1>HUNT THE WUMPUS</h1>
+            <article id="a1" class="cop">
+                <p>
+                    For me this little project kind of spans my entire career in computing. From the first time I
+                    worked with a computer in the early 80's, to the present technology we use today.<br /><br />
+
+                    Since asm.js and later Webassembly started to provide more efficient code execution in the
+                    browser, I have been curious and hoped that the browser would actually start to emerge as a
+                    application platform, more than a hypertext document model, twisted and turned numerous times to
+                    try to facilitate that we can build applications on the net.
+
+                    <br /><br />During this project I figured out that Webassembly is properly not gonna save my day
+                    and turn web development into and application development nirvana.
+
+                    <br /><br />To learn about Webassembly I looked for the "best" language to compile to
+                    Webassembly. And Rust came out as the strongest candidate. Firstly because Rust has a very small
+                    runtime when the code is compiled to Webassembly. Languages like Go, Java, C# need much more
+                    runtime to support their libraries, making the Webassembly modules much larger, causing download
+                    and startup time of the web application to be slower and less efficient.
+
+                    <br /><br />But I needed something to code in Rust and ultimately compile to Webassembly. And in
+                    a moment of nostalgia I thought about the very first game I entered and ran on the very first
+                    computer that I had access to, a Nascom 2.
+
+                    <br /><br />One of the great things of coming of age in the early 80's, and moving into the
+                    upper grades of elementary school was that we could come to school in the evenings and learn
+                    practical skills like fixing our mopeds, making pottery, sewing, woodworking, or working with
+                    metal.
+
+                    <br /><br />But for me the coolest thing for me, was that a young student of the local
+                    department of computer science started a class in computing. He had imported two DIY Nascom 2
+                    computer sets from the UK and skillfully assembled them. After some tuition, we boys could take
+                    turns at the computer and try out our skills as programmers. These evenings set the direction
+                    for me and fast forward to why I am still having fun programming Rust in the late evening hours
+                    after so many years as an IT professional.
+
+                    <br /><br />In class we had this fantastic book "More BASIC computer games (1980)" from Creative
+                    Computing. And out of the 84 games in the book, the game of Wumpus caught my attention. And I
+                    remember that I with some struggle managed to convert it from TRS80 BASIC to Microsoft BASIC so
+                    it could run on the Nascom 2, and a joyful moment it was, when I could enter RUN and the game
+                    was playable.
+
+                    <br /><br />Now, with an even greater struggle, I converted the old game to Rust and compiled it
+                    to Webassembly, and You are free to play it here on the left. I tried to keep as true to the
+                    original gameplay and interaction as possible to mimic the feeling of the old Nascom 2 as
+                    closely as possible. (And kept the page layout very classic )
+
+                    <br /><br />This story actually comes with a sad ending. For some unhappy reason, the computing
+                    class came to an end. And by a surprising coincident I inherited one of the Nascom 2 computers.
+                    I had great fun with it for some time, until a range of ZX-81, ZX-Spectrums, Amstrads and Amigas
+                    took over its place. Years after beeing stowed away in a closet, I found the old guy
+                    and tried to power it on. But it short-circuited with a big flame and a fowl smell, and that was
+                    it. Wumpus died!! Until now in 2024, where I have made him come back from the dead.
+                </p>
+            </article>
+        </div>
+
+        <div id="ti">
+            <i>&gt;</i>
+            <input id="tin" type="text" autofocus>
+        </div>
+    </div>
+</body>
+<script>
+
+    var game = null
+    const inputField = document.getElementById("tin")
+    const textArea = document.getElementById("ta")
+
+    const addLineToElement = (line) => {
+        let lineElement = document.createElement("div")
+        lineElement.className = "le"
+        lineElement.innerHTML = line
+        textArea.insertBefore(lineElement, textArea.firstChild)
+    }
+
+    const handleInput = (e) => {
+        if (e.keyCode === 13) {
+            let command = inputField.value
+            game.game_action(command)
+            inputField.value = ""
+        }
+    }
+
+    const addLine = (line) => {
+
+        line = line.replace(" ", "&nbsp;")
+        addLineToElement(line);
+    }
+
+    const getRandomNumber = (max) => Math.floor(Math.random() * max)
+
+    inputField.addEventListener("keydown", (e) => handleInput(e))
+</script>
+<script type="module">
+    import init, { WasmGame } from "./pkg/wumpus_take_ii.js";
+
+    init().then(() => {
+        game = WasmGame.new()
+        game.start_game()
+    })
+</script>
+
+</html>
